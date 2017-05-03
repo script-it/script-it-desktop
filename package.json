@@ -3,7 +3,7 @@
   "productName": "Script It",
   "version": "1.0.0",
   "description": "The text editor for screenwriters",
-  "main": "src/index.js",
+  "main": "src/main-process/main.js",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
@@ -44,7 +44,10 @@
     }
   },
   "dependencies": {
-    "electron-compile": "^6.4.1"
+    "electron-compile": "^6.4.1",
+    "prop-types": "^15.5.8",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4"
   },
   "devDependencies": {
     "babel-plugin-transform-async-to-generator": "^6.24.1",
