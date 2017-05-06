@@ -2,10 +2,10 @@ import {
   app,
   BrowserWindow,
   dialog,
-  Menu
+  Menu,
 } from 'electron';
-import path from 'path'
-import url from 'url'
+import path from 'path';
+import url from 'url';
 
 let mainWindow;
 let currentFile;
@@ -15,16 +15,66 @@ const createWindow = (fileToOpen) => {
     width: 800,
     height: 600,
   });
-  mainWindow.loadSettings = { fileToOpen }
+  mainWindow.loadSettings = { fileToOpen };
   mainWindow.loadURL(url.format({
     protocol: 'file',
     slashes: true,
-    pathname: path.join(__dirname, '..', 'index.html')
-  }))
+    pathname: path.join(__dirname, '..', 'index.html'),
+  }));
   mainWindow.webContents.openDevTools();
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
+};
+
+const openFile = (filenames) => {
+  if (filenames) {
+    currentFile = filenames[0];
+    createWindow(currentFile);
+  }
+};
+
+const createApplicationMenu = () => {
+  const applicationMenu = [
+    {
+      label: 'File',
+      submenu: [
+        {
+          label: 'Open',
+          accelerator: 'CmdOrCtrl+O',
+          click: () => {
+            dialog.showOpenDialog({
+              properties: [
+                'openFile',
+              ],
+            }, openFile);
+          },
+        },
+      ],
+    },
+  ];
+
+  if (process.platform === 'darwin') {
+    const name = app.getName();
+    applicationMenu.unshift({
+      label: name,
+      submenu: [
+        {
+          label: `About ${name}`,
+          role: 'about',
+        },
+        { type: 'separator' },
+        {
+          label: 'Services',
+          role: 'services',
+          submenu: [],
+        },
+      ],
+    });
+  }
+
+  const menu = Menu.buildFromTemplate(applicationMenu);
+  Menu.setApplicationMenu(menu);
 };
 
 app.on('ready', () => {
@@ -43,53 +93,3 @@ app.on('activate', () => {
     createWindow();
   }
 });
-
-const openFile = (filenames) => {
-  if (filenames) {
-    currentFile = filenames[0]
-    createWindow(currentFile)
-  }
-}
-
-const createApplicationMenu = () => {
-  const applicationMenu = [
-    {
-      label: 'File',
-      submenu: [
-        {
-          label: 'Open',
-          accelerator: 'CmdOrCtrl+O',
-          click: () => {
-            dialog.showOpenDialog({
-              properties: [
-                'openFile'
-              ]
-            }, openFile)
-          }
-        }
-      ]
-    }
-  ]
-
-  if (process.platform === 'darwin') {
-    const name = app.getName()
-    applicationMenu.unshift({
-      label: name,
-      submenu: [
-        {
-          label: `About ${name}`,
-          role: 'about'
-        },
-        { type: 'separator' },
-        {
-          label: 'Services',
-          role: 'services',
-          submenu: []
-        }
-      ]
-    })
-  }
-
-  const menu = Menu.buildFromTemplate(applicationMenu)
-  Menu.setApplicationMenu(menu)
-}
