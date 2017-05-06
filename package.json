@@ -8,7 +8,8 @@
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "devtools": "./node_modules/react-devtools/bin.js"
   },
   "keywords": [],
   "author": "Paris Yee",
@@ -44,6 +45,7 @@
     }
   },
   "dependencies": {
+    "draft-js": "^0.10.0",
     "electron-compile": "^6.4.1",
     "prop-types": "^15.5.8",
     "react": "^15.5.4",
@@ -58,6 +60,7 @@
     "eslint-config-airbnb": "^14.1.0",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^3.0.0",
-    "eslint-plugin-react": "^6.10.3"
+    "eslint-plugin-react": "^6.10.3",
+    "react-devtools": "^2.1.7"
   }
 }
