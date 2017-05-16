@@ -1,12 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { ContentState, Editor, EditorState } from 'draft-js';
+import {
+  ContentState,
+  Editor,
+  EditorState,
+} from 'draft-js';
+import keyBindingFn from '../utils/key-bindings';
 import fs from 'fs';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = { editorState: EditorState.createEmpty() };
+    this.handleKeyCommand = this.handleKeyCommand.bind(this);
     this.onChange = this.handleChange.bind(this);
   }
   
@@ -28,7 +34,15 @@ class App extends Component {
   }
 
   handleChange(editorState) {
-    this.setState({ editorState }, this.saveFile);
+    this.setState({ editorState });
+  }
+
+  handleKeyCommand(command) {
+    if (command === 'save-file') {
+      this.saveFile();
+      return 'handled';
+    }
+    return 'not-handled';
   }
 
   saveFile() {
@@ -42,6 +56,8 @@ class App extends Component {
     return (
       <Editor
         editorState={this.state.editorState}
+        handleKeyCommand={this.handleKeyCommand}
+        keyBindingFn={keyBindingFn}
         onChange={this.onChange}
       />
     );
