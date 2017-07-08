@@ -19,6 +19,12 @@ const createWindow = (filename) => {
     slashes: true,
     pathname: path.join(__dirname, '..', 'index.html'),
   }));
+  newWindow.on('close', () => {
+    windows.splice(windows.indexOf(newWindow), 1);
+    if (currentWindow === newWindow) {
+      currentWindow = windows[windows.length - 1];
+    }
+  });
   newWindow.webContents.openDevTools();
   windows.push(newWindow);
   currentWindow = newWindow;
@@ -31,10 +37,15 @@ const saveFileAs = () => {
 };
 
 const menuFunctions = {
-  openFile(filenames) {
+  createWindow(filenames) {
     if (filenames) {
       createWindow(filenames[0]);
+    } else {
+      createWindow()
     }
+  },
+  closeWindow() {
+    currentWindow.close();
   },
   saveFile() {
     currentWindow.webContents.send('save-file');

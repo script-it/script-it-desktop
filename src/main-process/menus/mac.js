@@ -19,6 +19,13 @@ const createMacApplicationMenu = (menuFunctions) => {
       label: 'File',
       submenu: [
         {
+          label: 'New',
+          accelerator: 'CmdOrCtrl+N',
+          click() {
+            menuFunctions.createWindow();
+          }
+        },
+        {
           label: 'Open',
           accelerator: 'CmdOrCtrl+O',
           click() {
@@ -26,8 +33,16 @@ const createMacApplicationMenu = (menuFunctions) => {
               properties: [
                 'openFile',
               ],
-            }, menuFunctions.openFile);
+            }, menuFunctions.createWindow);
           },
+        },
+        { type: 'separator' },
+        {
+          label: 'Close',
+          accelerator: 'CmdOrCtrl+W',
+          click() {
+            menuFunctions.closeWindow();
+          }
         },
         { type: 'separator' },
         {
