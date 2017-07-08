@@ -1,14 +1,9 @@
-import {
-  app,
-  BrowserWindow,
-  dialog,
-  Menu,
-} from 'electron';
+import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import url from 'url';
+import createMacApplicationMenu from './menus/mac';
 
 let mainWindow;
-let currentFile;
 
 const createWindow = (fileToOpen) => {
   mainWindow = new BrowserWindow({
@@ -27,58 +22,18 @@ const createWindow = (fileToOpen) => {
   });
 };
 
-const openFile = (filenames) => {
-  if (filenames) {
-    currentFile = filenames[0];
-    createWindow(currentFile);
+const menuFunctions = {
+  openFile(filenames) {
+    if (filenames) {
+      createWindow(filenames[0]);
+    }
   }
-};
-
-const createApplicationMenu = () => {
-  const applicationMenu = [
-    {
-      label: 'File',
-      submenu: [
-        {
-          label: 'Open',
-          accelerator: 'CmdOrCtrl+O',
-          click: () => {
-            dialog.showOpenDialog({
-              properties: [
-                'openFile',
-              ],
-            }, openFile);
-          },
-        },
-      ],
-    },
-  ];
-
-  if (process.platform === 'darwin') {
-    const name = app.getName();
-    applicationMenu.unshift({
-      label: name,
-      submenu: [
-        {
-          label: `About ${name}`,
-          role: 'about',
-        },
-        { type: 'separator' },
-        {
-          label: 'Services',
-          role: 'services',
-          submenu: [],
-        },
-      ],
-    });
-  }
-
-  const menu = Menu.buildFromTemplate(applicationMenu);
-  Menu.setApplicationMenu(menu);
 };
 
 app.on('ready', () => {
-  createApplicationMenu();
+  if (process.platform === 'darwin') {
+    createMacApplicationMenu(menuFunctions);
+  }
   createWindow();
 });
 
