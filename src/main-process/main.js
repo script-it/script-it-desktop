@@ -1,24 +1,32 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain } from 'electron';
+import createMacApplicationMenu from './menus/mac';
+import fs from 'fs';
 import path from 'path';
 import url from 'url';
-import createMacApplicationMenu from './menus/mac';
 
-let mainWindow;
+const windows = [];
+let currentWindow;
 
-const createWindow = (fileToOpen) => {
-  mainWindow = new BrowserWindow({
+const createWindow = (filename) => {
+  let newWindow = new BrowserWindow({
     width: 1300,
     height: 800,
+    title: filename,
   });
-  mainWindow.loadSettings = { fileToOpen };
-  mainWindow.loadURL(url.format({
+  newWindow.loadSettings = { filename };
+  newWindow.loadURL(url.format({
     protocol: 'file',
     slashes: true,
     pathname: path.join(__dirname, '..', 'index.html'),
   }));
-  mainWindow.webContents.openDevTools();
-  mainWindow.on('closed', () => {
-    mainWindow = null;
+  newWindow.webContents.openDevTools();
+  windows.push(newWindow);
+  currentWindow = newWindow;
+};
+
+const saveFileAs = () => {
+  dialog.showSaveDialog({}, (filename) => {
+    currentWindow.webContents.send('save-file-as', { filename });
   });
 };
 
@@ -27,7 +35,13 @@ const menuFunctions = {
     if (filenames) {
       createWindow(filenames[0]);
     }
-  }
+  },
+  saveFile() {
+    currentWindow.webContents.send('save-file');
+  },
+  saveFileAs() {
+    saveFileAs();
+  },
 };
 
 app.on('ready', () => {
@@ -37,6 +51,10 @@ app.on('ready', () => {
   createWindow();
 });
 
+app.on('browser-window-focus', (event, window) => {
+  currentWindow = window;
+});
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
@@ -44,7 +62,15 @@ app.on('window-all-closed', () => {
 });
 
 app.on('activate', () => {
-  if (mainWindow === null) {
+  if (!currentWindow || windows.length === 0) {
     createWindow();
   }
+});
+
+ipcMain.on('open-save-dialog', () => {
+  saveFileAs();
+});
+
+ipcMain.on('update-window-title', (event, props) => {
+  currentWindow.setTitle(props.title);
 });

@@ -29,6 +29,21 @@ const createMacApplicationMenu = (menuFunctions) => {
             }, menuFunctions.openFile);
           },
         },
+        { type: 'separator' },
+        {
+          label: 'Save',
+          accelerator: 'CmdOrCtrl+S',
+          click() {
+            menuFunctions.saveFile();
+          },
+        },
+        {
+          label: 'Save As',
+          accelerator: 'CmdOrCtrl+Shift+S',
+          click() {
+            menuFunctions.saveFileAs();
+          },
+        },
       ],
     },
     {

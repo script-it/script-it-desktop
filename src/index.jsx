@@ -3,6 +3,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/app';
 
-const fileToOpen = remote.getCurrentWindow().loadSettings.fileToOpen;
+const filename = remote.getCurrentWindow().loadSettings.fileToOpen;
 
-ReactDOM.render(<App fileToOpen={fileToOpen} />, document.getElementById('app'));
+ReactDOM.render(<App filename={filename} />, document.getElementById('app'));
