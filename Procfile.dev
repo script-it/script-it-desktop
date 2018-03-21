@@ -1,2 +1,2 @@
 app: yarn run start
-devtools: yarn run devtools
+devtools: yarn react-devtools
