@@ -2,6 +2,22 @@
   background: pink;
 }
 
+.character {
+  background: aquamarine;
+}
+
+.dialog {
+  background: cyan;
+}
+
 .heading {
   background: lightgray;
+}
+
+.parenthetical {
+  background: coral;
+}
+
+.transition {
+  background: blanchedalmond;
 }

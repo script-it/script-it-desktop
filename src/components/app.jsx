@@ -15,11 +15,12 @@ class App extends Component {
     super(props);
 
     this.state = {
+      currentElementType: ScreenplayElementTypes.action,
       editorState: EditorState.createEmpty(),
       filename: props.filename
     };
 
-    this.changeScreenplayElementType = this.changeScreenplayElementType.bind(this);
+    this.changeElementType = this.changeElementType.bind(this);
     this.handleKeyCommand = this.handleKeyCommand.bind(this);
     this.handleTab = this.handleTab.bind(this);
     this.onChange = this.handleChange.bind(this);
@@ -27,48 +28,63 @@ class App extends Component {
   }
   
   componentDidMount() {
-    this.setCurrentBlockType(ScreenplayElementTypes.action);
+    this.setCurrentBlockType(this.state.currentElementType);
   }
 
   handleChange(editorState) {
     this.setState({ editorState });
   }
-
-  setCurrentBlockType(type) {
-    this.setState({
-      editorState: RichUtils.toggleBlockType(this.state.editorState, type)
-    });
-  }
-
-  changeScreenplayElementType() {
-    const currentElementType = RichUtils.getCurrentBlockType(this.state.editorState);
-    const nextElementType = NextScreenplayElement(currentElementType);
-    this.setCurrentBlockType(nextElementType);
-  }
-
+  
   handleKeyCommand(command) {
     return 'not-handled';
   }
 
   handleTab(event) {
     event.preventDefault();
-    this.changeScreenplayElementType();
+    this.changeElementType();
+  }
+
+  changeElementType() {
+    const currentElementType = RichUtils.getCurrentBlockType(this.state.editorState);
+    const nextElementType = NextScreenplayElement(currentElementType);
+    this.setState({currentElementType: nextElementType}, () => {
+      this.setCurrentBlockType(nextElementType);
+    });
+  }
+  
+  setCurrentBlockType(type) {
+    this.setState({
+      editorState: RichUtils.toggleBlockType(this.state.editorState, type)
+    });
   }
 
   blockStyleFn(contentBlock) {
     return contentBlock.getType();
   }
 
+  renderToolbar() {
+    return (
+      <div className="toolbar">
+        <div>
+          {this.state.currentElementType}
+        </div>
+      </div>
+    );
+  }
+
   render() {
     return (
-      <Editor
-        blockStyleFn={this.blockStyleFn}
-        editorState={this.state.editorState}
-        handleKeyCommand={this.handleKeyCommand}
-        keyBindingFn={keyBindingFn}
-        onChange={this.onChange}
-        onTab={this.handleTab}
-      />
+      <div>
+        {this.renderToolbar()}
+        <Editor
+          blockStyleFn={this.blockStyleFn}
+          editorState={this.state.editorState}
+          handleKeyCommand={this.handleKeyCommand}
+          keyBindingFn={keyBindingFn}
+          onChange={this.onChange}
+          onTab={this.handleTab}
+        />
+      </div>
     );
   }
 }

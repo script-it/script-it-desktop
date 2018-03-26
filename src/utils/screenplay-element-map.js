@@ -8,8 +8,12 @@ const ScreenplayElementTypes = {
 };
 
 const nextScreenplayElementOrder = {
-  'action': 'heading',
-  'heading': 'action'
+  'heading': 'action',
+  'action': 'character',
+  'character': 'dialog',
+  'dialog': 'parenthetical',
+  'parenthetical': 'transition',
+  'transition': 'heading'
 };
 
 const NextScreenplayElement = (type) => {
