@@ -1,17 +1,26 @@
 .action {
   background: pink;
+  margin: 5px 0px;
 }
 
 .character {
   background: aquamarine;
+  width: 40%;
+  margin: 5px auto;
+  text-transform: uppercase;
 }
 
 .dialog {
   background: cyan;
+  width: 65%;
+  margin: 5px auto;
 }
 
 .heading {
   background: lightgray;
+  margin: 5px 0px;
+  text-transform: uppercase;
+  font-weight: bold;
 }
 
 .parenthetical {
@@ -20,4 +29,5 @@
 
 .transition {
   background: blanchedalmond;
+  text-transform: uppercase;
 }

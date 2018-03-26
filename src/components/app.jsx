@@ -76,14 +76,16 @@ class App extends Component {
     return (
       <div>
         {this.renderToolbar()}
-        <Editor
-          blockStyleFn={this.blockStyleFn}
-          editorState={this.state.editorState}
-          handleKeyCommand={this.handleKeyCommand}
-          keyBindingFn={keyBindingFn}
-          onChange={this.onChange}
-          onTab={this.handleTab}
-        />
+        <div className="screenplay-editor">
+          <Editor
+            blockStyleFn={this.blockStyleFn}
+            editorState={this.state.editorState}
+            handleKeyCommand={this.handleKeyCommand}
+            keyBindingFn={keyBindingFn}
+            onChange={this.onChange}
+            onTab={this.handleTab}
+          />
+        </div>
       </div>
     );
   }
