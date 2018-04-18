@@ -25,6 +25,7 @@ class App extends Component {
     this.handleTab = this.handleTab.bind(this);
     this.onChange = this.handleChange.bind(this);
     this.setCurrentBlockType = this.setCurrentBlockType.bind(this);
+    this.logFountain = this.logFountain.bind(this);
   }
   
   componentDidMount() {
@@ -62,12 +63,32 @@ class App extends Component {
     return contentBlock.getType();
   }
 
+  logFountain() {
+    // this.state.editorState.getCurrentContent().getBlocksAsArray()
+    //
+    // this will get the blocks in order, then it will be the job of an adapter
+    // to iterate through the blocks and create a line of fountain text for each
+    // block based on its type and text content.
+    console.log(this.state.editorState.getCurrentContent().getPlainText());
+    // ^^^ this is not detailed enough.
+  }
+
+  // we also need a handle return to set the block type to the next logical type
+  // character -> dialogue, dialogue -> character, parenthetical -> dialog
+  //
+  // we also have to auto detect 'INT', 'EXT' and '()'. Maybe everything that
+  // doesn't come after a character or dialog or parenthetical will automatically
+  // be inserted as an action. then they can be manually changed with <tab> or
+  // will automatically be changed when special character's are detected in the
+  // proper locations.
+
   renderToolbar() {
     return (
       <div className="toolbar">
         <div>
           {this.state.currentElementType}
         </div>
+        <button onClick={this.logFountain}>Log Fountain</button>
       </div>
     );
   }
