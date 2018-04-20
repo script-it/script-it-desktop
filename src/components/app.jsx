@@ -4,10 +4,8 @@ import {
   EditorState,
   RichUtils,
 } from 'draft-js';
-import {
-  ScreenplayElementTypes,
-  NextScreenplayElement
-} from '../utils/screenplay-element-map';
+import * as FormatUtils from '../utils/screenplay-format-utils';
+import FormatToFountain from '../utils/format-to-fountain';
 import keyBindingFn from '../utils/key-bindings';
 
 class App extends Component {
@@ -15,17 +13,18 @@ class App extends Component {
     super(props);
 
     this.state = {
-      currentElementType: ScreenplayElementTypes.action,
+      currentElementType: FormatUtils.ElementTypes.action,
       editorState: EditorState.createEmpty(),
       filename: props.filename
     };
 
     this.changeElementType = this.changeElementType.bind(this);
+    this.handleChange = this.handleChange.bind(this);
     this.handleKeyCommand = this.handleKeyCommand.bind(this);
+    this.handleReturn = this.handleReturn.bind(this);
     this.handleTab = this.handleTab.bind(this);
-    this.onChange = this.handleChange.bind(this);
-    this.setCurrentBlockType = this.setCurrentBlockType.bind(this);
     this.logFountain = this.logFountain.bind(this);
+    this.setCurrentBlockType = this.setCurrentBlockType.bind(this);
   }
   
   componentDidMount() {
@@ -40,16 +39,22 @@ class App extends Component {
     return 'not-handled';
   }
 
-  handleTab(event) {
-    event.preventDefault();
-    this.changeElementType();
+  handleReturn() {
+    const currentType = RichUtils.getCurrentBlockType(this.state.editorState);
+    const nextType = FormatUtils.NextInReturnSequence(currentType);
+    this.changeElementType(nextType);
   }
 
-  changeElementType() {
-    const currentElementType = RichUtils.getCurrentBlockType(this.state.editorState);
-    const nextElementType = NextScreenplayElement(currentElementType);
-    this.setState({currentElementType: nextElementType}, () => {
-      this.setCurrentBlockType(nextElementType);
+  handleTab(event) {
+    event.preventDefault();
+    const currentType = RichUtils.getCurrentBlockType(this.state.editorState);
+    const nextType = FormatUtils.NextInTabSequence(currentType);
+    this.changeElementType(nextType);
+  }
+
+  changeElementType(type) {
+    this.setState({currentElementType: type}, () => {
+      this.setCurrentBlockType(type);
     });
   }
   
@@ -64,13 +69,15 @@ class App extends Component {
   }
 
   logFountain() {
-    // this.state.editorState.getCurrentContent().getBlocksAsArray()
-    //
-    // this will get the blocks in order, then it will be the job of an adapter
-    // to iterate through the blocks and create a line of fountain text for each
-    // block based on its type and text content.
-    console.log(this.state.editorState.getCurrentContent().getPlainText());
-    // ^^^ this is not detailed enough.
+    let fountainString = '';
+    const contentBlocks = this.state.editorState.getCurrentContent().getBlocksAsArray();
+
+    contentBlocks.forEach((contentBlock) => {
+      const line = FormatToFountain(contentBlock.type, contentBlock.text);
+      fountainString += `${line}\n`;
+    });
+
+    console.log(fountainString);
   }
 
   // we also need a handle return to set the block type to the next logical type
@@ -102,8 +109,9 @@ class App extends Component {
             blockStyleFn={this.blockStyleFn}
             editorState={this.state.editorState}
             handleKeyCommand={this.handleKeyCommand}
+            handleReturn={this.handleReturn}
             keyBindingFn={keyBindingFn}
-            onChange={this.onChange}
+            onChange={this.handleChange}
             onTab={this.handleTab}
           />
         </div>
